@@ -1,6 +1,7 @@
 var webgl,
     gui,
-    globalAudio;
+    globalAudio,
+    soundAllowed;
 
 $(document).ready(init);
 
@@ -28,7 +29,9 @@ function getSoundFromMic() {
 
     globalAudio.context = new AudioContext();
 
-    navigator.getUserMedia({audio: true, video: false}, function(stream) {
+    navigator.getUserMedia({audio: true}, function(stream) {
+
+        console.log(stream);
 
         globalAudio.sourceNode = globalAudio.context.createMediaStreamSource(stream),
         globalAudio.audioStream = stream,
