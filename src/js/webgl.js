@@ -43,6 +43,11 @@ var Webgl = (function(){
         light.shadowCameraVisible = false;
         this.scene.add(light);
 
+        // GUI
+        gui.add(this.camera.position, 'x');
+        gui.add(this.camera.position, 'y');
+        gui.add(this.camera.position, 'z');
+
 
         // Controls
         this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
@@ -72,6 +77,7 @@ var Webgl = (function(){
     Webgl.prototype.followBall = function (value) {
         // console.log(value, this.camera.position.z);
         this.camera.position.z = value - 400;
+        console.log(light);
     }
 
     Webgl.prototype.buildGround = function () {
@@ -208,20 +214,23 @@ var Webgl = (function(){
         this.scene.simulate();
 
         // this.controls.update();
-        console.log(this.camera.position.z);
+        // console.log(this.camera.position.z);
 
-        if(ball.position.y == 30 && soundAllowed == false) {
+        if(ball.position.y == 30 && !soundAllowed) {
             soundAllowed = true;
             getSoundFromMic();
             this.camera.position.z = ball.position.z - 400;
+            // return;
         }
 
-        if(ball.position.y > 30) {
-            return;
+        if(soundAllowed) {
+            this.blowMovesScene(audioObject);
+            this.followBall(ball.position.z);
         }
 
-        this.blowMovesScene(audioObject);
-        this.followBall(ball.position.z);
+        if(ball.position.y >= 31) {
+            // return;
+        }
     };
 
     return Webgl;
