@@ -3,9 +3,10 @@ var Sphere = (function(){
     function Sphere(){
         THREE.Object3D.call(this);
 
-        var geometry = new THREE.SphereGeometry(35);
-        var material = new THREE.MeshBasicMaterial({color: 0x3facc8, wireframe: true});
+        var geometry = new THREE.SphereGeometry(2, 64, 48);
+        var material = new THREE.MeshLambertMaterial({color: 0x5f5f5f});
         this.mesh = new THREE.Mesh(geometry, material);
+        this.mesh.overdraw = true;
         this.add(this.mesh);
     }
 
@@ -13,7 +14,6 @@ var Sphere = (function(){
     Sphere.prototype.constructor = Sphere;
 
     Sphere.prototype.update = function() {
-        //this.mesh.rotation.y += 0.01;
     };
 
     return Sphere;

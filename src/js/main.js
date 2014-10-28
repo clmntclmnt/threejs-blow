@@ -9,10 +9,11 @@ function init(){
     soundAllowed = false;
     globalAudio = {};
 
-    getSoundFromMic();
+    // getSoundFromMic();
 
     gui = new dat.GUI();
-    gui.close();
+
+    // gui.close();
     webgl = new Webgl(window.innerWidth, window.innerHeight);
 
     $(window).on('resize', resizeHandler);
