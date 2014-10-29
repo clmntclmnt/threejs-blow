@@ -80,11 +80,15 @@ var Webgl = (function(){
         this.bloomEffect.renderToScreen = false;
         this.effects.push(this.bloomEffect);
 
+        this.copyPass = new THREE.ShaderPass(THREE.CopyShader);
+        this.effects.push(this.copyPass)
+        // this.copyPass.renderToScreen = true;
+
+
         for(var i=0,j=this.effects.length; i<j; i++){
             this.composer.addPass(this.effects[i]);
         }
         // this.composer.addPass(this.effects[0]);
-        console.log(this.effects);
 
         // this.stopEffects();
     };
@@ -100,12 +104,12 @@ var Webgl = (function(){
     Webgl.prototype.startEffect = function (name) {
         switch(name) {
             case 'glitch':
-                console.log('glitch');
                 this.effects[0].renderToScreen = true;
             break;
             case 'bloom':
-                console.log('bloom');
-                this.effects[1].renderToScreen = true;
+                console.log('youpi');
+                this.effects[0].enabled = false;
+                this.effects[2].renderToScreen = true;
             break;
         }
     };
@@ -285,7 +289,7 @@ var Webgl = (function(){
 
         this.scene.simulate();
 
-        console.log('Ball position :', ball.position.z)
+
 
         // this.controls.update();
         // console.log(this.camera.position.z);
@@ -302,10 +306,13 @@ var Webgl = (function(){
             this.followBall(ball.position.z, audioObject);
         }
 
-        // if(ball.position.z)
-        if(ball.position.z > 30 && ball.position.z < 250) {
+        if(ball.position.z > 30) {
             this.renderer.clear();
             this.composer.render();
+        }
+ 
+        // if(ball.position.z)
+        if(ball.position.z > 30 && ball.position.z < 250) {
 
             if(this.stopExecuted) {
                 return;
@@ -325,7 +332,7 @@ var Webgl = (function(){
             }
 
             this.stopEffects();
-            this.startEffect('glitch');
+            this.startEffect('bloom');
         }
     };
 

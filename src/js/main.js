@@ -7,6 +7,9 @@ var webgl,
 $(document).ready(init);
 
 function init(){
+    // FLAG
+    isStarted = true;
+
     soundAllowed = false;
     globalAudio = {};
 
@@ -41,8 +44,6 @@ function getSoundFromMic() {
     globalAudio.context = new AudioContext();
 
     navigator.getUserMedia({audio: true}, function(stream) {
-
-        console.log(stream);
 
         globalAudio.sourceNode = globalAudio.context.createMediaStreamSource(stream),
         globalAudio.audioStream = stream,
@@ -92,7 +93,6 @@ function animate() {
     }
 
     samplesHandler(globalAudio.amplitudeArray);
-    console.log(globalAudio.amplitudeArray.length);
 }
 
 

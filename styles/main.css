@@ -77,15 +77,15 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   bottom: 0px;
   height: 100%;
   width: 100%;
-  display: table;
+  display: none;
 }
-/* line 13, ../resources/sass/ui/_popin.scss */
+/* line 14, ../resources/sass/ui/_popin.scss */
 .popin--home .popin__inner {
   display: table-cell;
   vertical-align: middle;
   text-align: center;
 }
-/* line 18, ../resources/sass/ui/_popin.scss */
+/* line 19, ../resources/sass/ui/_popin.scss */
 .popin--home .popin__inner .picture {
   width: 500px;
 }
