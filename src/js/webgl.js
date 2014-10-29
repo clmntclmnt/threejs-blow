@@ -27,7 +27,8 @@ var Webgl = (function(){
 
         // Lights
         this.scene.add( new THREE.AmbientLight( 0x666666) );
-        var light = new THREE.SpotLight(0xcccccc);
+        var light = new THREE.SpotLight(0x000fff);
+        light.intensity = .5;
         light.position.set(0, 1000, 0);
         light.target.position.copy(this.scene.position);
         light.shadowCameraTop = -700;
@@ -70,14 +71,17 @@ var Webgl = (function(){
     };
 
     Webgl.prototype.moveBall = function(value) {
-        // console.log(value);
-        ball.setLinearVelocity( new THREE.Vector3(0,0,value*100) );
+        ball.setLinearVelocity( new THREE.Vector3(0,0,value*500) );
     };
 
     Webgl.prototype.followBall = function (value) {
         // console.log(value, this.camera.position.z);
         this.camera.position.z = value - 400;
-        console.log(light);
+
+        // Try tween camera
+        // console.log(TweenMax);
+        // TweenMax.to(this.camera.position, {z: (value-400)}, 200);
+        // console.log(light);
     }
 
     Webgl.prototype.buildGround = function () {
@@ -88,7 +92,7 @@ var Webgl = (function(){
             new THREE.MeshPhongMaterial({
                 color: 0x999999,
                 wireframe: false,
-                shininess: 10,
+                shininess: 25,
                 color: 0xdddddd,
                 emissive: 0x111111
             }),
@@ -171,11 +175,12 @@ var Webgl = (function(){
         // create the physijs-enabled material with some decent friction & bounce properties
         var ballMaterial = Physijs.createMaterial(
         new THREE.MeshLambertMaterial({
-          map: ballTexture,
-          shininess: 10,
-          color: 0xdddddd,
-          emissive: 0x111111,
-          side: THREE.FrontSide
+            map: ballTexture,
+            shininess: 10,
+            color: 0xdddddd,
+            emissive: 0xffffff,
+            side: THREE.FrontSide,
+            depthTest: false
         }),
         .6, // mid friction
         .5 // mid restitution
