@@ -1,7 +1,8 @@
 var webgl,
     gui,
     globalAudio,
-    soundAllowed;
+    soundAllowed,
+    isStarted;
 
 $(document).ready(init);
 
@@ -18,9 +19,18 @@ function init(){
 
     $(window).on('resize', resizeHandler);
 
+    animateIntroScene();
+
     animate();
 
     // main.init();
+}
+
+function animateIntroScene() {
+    var $logo = $('.js-intro').find('.picture');
+
+    TweenMax.from($logo, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to($logo, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
 }
 
 function getSoundFromMic() {
@@ -82,6 +92,7 @@ function animate() {
     }
 
     samplesHandler(globalAudio.amplitudeArray);
+    console.log(globalAudio.amplitudeArray.length);
 }
 
 

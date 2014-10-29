@@ -1,0 +1,22 @@
+.popin {}
+
+.popin--home {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	height: 100%;
+	width: 100%;
+	display: table;
+
+	.popin__inner {
+		display: table-cell;
+		vertical-align: middle;
+		text-align: center;
+
+		.picture {
+			width: 500px;
+		}
+	}
+}

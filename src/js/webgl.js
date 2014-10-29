@@ -4,7 +4,8 @@ var Webgl = (function(){
         this.t = 0;
         this.valueToDesc = 0.8;
         this.lightDirection = true;
-
+        this.destination = 0;
+        this.stopExecuted = false;
 
         this.buildPhysicsScene();
         this.buildGround();
@@ -17,7 +18,7 @@ var Webgl = (function(){
 
         this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.setSize(width, height);
-        this.renderer.setClearColor(0xeeeeee);
+        this.renderer.setClearColor(0x000000);
         this.renderer.shadowMapEnabled = true;
         this.renderer.shadowMapSoft = true;
         this.renderer.shadowMapType = THREE.PCFShadowMap;
@@ -26,23 +27,29 @@ var Webgl = (function(){
         $('.three').append(this.renderer.domElement);
 
         // Lights
-        this.scene.add( new THREE.AmbientLight( 0x666666) );
-        var light = new THREE.SpotLight(0x000fff);
-        light.intensity = .5;
-        light.position.set(0, 1000, 0);
-        light.target.position.copy(this.scene.position);
-        light.shadowCameraTop = -700;
-        light.shadowCameraLeft = -700;
-        light.shadowCameraRight = 700;
-        light.shadowCameraBottom = 700;
-        light.shadowCameraNear = 20;
-        light.shadowCameraFar = 1400;
-        light.shadowBias = -.0001;
-        light.shadowMapWidth = light.shadowMapHeight = 1024;
-        light.shadowDarkness = .25;
-        light.castShadow = true;
-        light.shadowCameraVisible = false;
-        this.scene.add(light);
+        this.scene.add( new THREE.AmbientLight( 0x000000) );
+        
+        this.landLight = new THREE.SpotLight(0x0B1340);
+        this.landLight.intensity = .5;
+        this.landLight.position.set(0, 1000, 0);
+        this.landLight.target.position.copy(this.scene.position);
+        this.landLight.shadowCameraTop = -700;
+        this.landLight.shadowCameraLeft = -700;
+        this.landLight.shadowCameraRight = 700;
+        this.landLight.shadowCameraBottom = 700;
+        this.landLight.shadowCameraNear = 20;
+        this.landLight.shadowCameraFar = 1400;
+        this.landLight.shadowBias = -.0001;
+        this.landLight.shadowMapWidth = this.landLight.shadowMapHeight = 1024;
+        this.landLight.shadowDarkness = .25;
+        this.landLight.castShadow = true;
+        this.landLight.shadowCameraVisible = false;
+        this.scene.add(this.landLight);
+        
+        this.farLight = new THREE.SpotLight(0xffa500);
+        this.farLight.intensity = .5;
+        this.farLight.position.set(0, 1000, 5000);
+        this.scene.add(this.farLight);
 
         // GUI
         gui.add(this.camera.position, 'x');
@@ -52,9 +59,57 @@ var Webgl = (function(){
 
         // Controls
         this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
+        this.initPostProcessing();
         // this.controls.addEventListener('change', this.render );
         // this.controls.target.set( 0, 0, 0 )
     };
+    
+    Webgl.prototype.initPostProcessing = function() {
+        this.effects = [];
+
+        this.composer = new THREE.EffectComposer(this.renderer);
+        this.renderModel = new THREE.RenderPass(this.scene,this.camera);		     
+        this.renderModel.renderToScreen = false;
+        this.composer.addPass(this.renderModel);
+
+        this.glitchEffect = new THREE.GlitchPass();
+        this.glitchEffect.renderToScreen = false;
+        this.effects.push(this.glitchEffect);
+
+        this.bloomEffect = new THREE.BloomPass(1.3);
+        this.bloomEffect.renderToScreen = false;
+        this.effects.push(this.bloomEffect);
+
+        for(var i=0,j=this.effects.length; i<j; i++){
+            this.composer.addPass(this.effects[i]);
+        }
+        // this.composer.addPass(this.effects[0]);
+        console.log(this.effects);
+
+        // this.stopEffects();
+    };
+
+    Webgl.prototype.stopEffects = function () {
+        for(var i = 0, j = this.effects.length; i<j; i++){
+            this.effects[i].renderToScreen = false;
+            console.log('stopped', i);
+        }
+        this.stopExecuted = true;
+    };
+
+    Webgl.prototype.startEffect = function (name) {
+        switch(name) {
+            case 'glitch':
+                console.log('glitch');
+                this.effects[0].renderToScreen = true;
+            break;
+            case 'bloom':
+                console.log('bloom');
+                this.effects[1].renderToScreen = true;
+            break;
+        }
+    };
+        
 
     Webgl.prototype.tossBall = function() {
         var xSpeed = Math.random() * 600 - 300;
@@ -69,14 +124,21 @@ var Webgl = (function(){
         this.scene = new Physijs.Scene({reportsize: 50, fixedTimeStep: 1 / 60});
         this.scene.setGravity(new THREE.Vector3( 0, -500, 0 ));
     };
-
+    
+    
     Webgl.prototype.moveBall = function(value) {
-        ball.setLinearVelocity( new THREE.Vector3(0,0,value*500) );
+//        console.log(value);
+        this.destination += ((value*50) - this.destination) * 0.1;
+        
+        ball.setLinearVelocity( new THREE.Vector3(0,0,this.destination) );
     };
 
-    Webgl.prototype.followBall = function (value) {
+    Webgl.prototype.followBall = function (value, audioObject) {
         // console.log(value, this.camera.position.z);
-        this.camera.position.z = value - 400;
+        this.camera.position.z += ((value - 400) - this.camera.position.z) * 0.1;
+//        this.farLight.intensity = (((audioObject.maxValue - 0.5)*2) > 0.2) ? ((audioObject.maxValue - 0.5)*2) : 0.2;
+//        console.log(this.farLight.intensity);
+//        console.log(this.farLight.intensity);//        this.light.position.set(0, 1000, value);
 
         // Try tween camera
         // console.log(TweenMax);
@@ -85,7 +147,7 @@ var Webgl = (function(){
     }
 
     Webgl.prototype.buildGround = function () {
-        var groundGeometry = new THREE.PlaneBufferGeometry(1000, 20000, 10, 10);
+        var groundGeometry = new THREE.PlaneBufferGeometry(10000, 20000, 10, 10);
         groundGeometry.computeFaceNormals();
         groundGeometry.computeVertexNormals();
         var groundMaterial = Physijs.createMaterial(
@@ -93,7 +155,7 @@ var Webgl = (function(){
                 color: 0x999999,
                 wireframe: false,
                 shininess: 25,
-                color: 0xdddddd,
+                color: 0xffffff,
                 emissive: 0x111111
             }),
             .8, // high friction
@@ -163,9 +225,9 @@ var Webgl = (function(){
         var ballContext = ballCanvas.getContext('2d');
 
         // draw 2 colored halves of the 2d canvas
-        ballContext.fillStyle = "#f8ae44";
+        ballContext.fillStyle = "#ffa500";
         ballContext.fillRect(0, 0, ballCanvas.width, ballCanvas.height/2);
-        ballContext.fillStyle = "#ffda4e";
+        ballContext.fillStyle = "#005aff";
         ballContext.fillRect(0, ballCanvas.height/2, ballCanvas.width, ballCanvas.height/2);
 
         // create the THREE texture object with our canvas
@@ -210,13 +272,20 @@ var Webgl = (function(){
 
     Webgl.prototype.blowMovesScene = function (audioObject) {
         if(audioObject.maxValue !== NaN){
-            (audioObject.maxValue > 0.8) ? this.moveBall(audioObject.maxValue) : this.moveBall(0);
+            (audioObject.maxValue > 0.8) ? this.moveBall(audioObject.maxValue / 0.2) : this.moveBall(0);
         }
     };
 
     Webgl.prototype.render = function(audioObject) {
         this.renderer.render(this.scene, this.camera);
+
+        if(!isStarted){
+            return;
+        }
+
         this.scene.simulate();
+
+        console.log('Ball position :', ball.position.z)
 
         // this.controls.update();
         // console.log(this.camera.position.z);
@@ -230,11 +299,33 @@ var Webgl = (function(){
 
         if(soundAllowed) {
             this.blowMovesScene(audioObject);
-            this.followBall(ball.position.z);
+            this.followBall(ball.position.z, audioObject);
         }
 
-        if(ball.position.y >= 31) {
-            // return;
+        // if(ball.position.z)
+        if(ball.position.z > 30 && ball.position.z < 250) {
+            this.renderer.clear();
+            this.composer.render();
+
+            if(this.stopExecuted) {
+                return;
+            }
+
+            this.stopEffects();
+            this.startEffect('glitch');
+        }
+
+        if(ball.position.z > 250 && ball.position.z < 300) {
+            this.stopExecuted = false;
+        }
+
+        if(ball.position.z > 300) {
+            if(this.stopExecuted) {
+                return;
+            }
+
+            this.stopEffects();
+            this.startEffect('glitch');
         }
     };
 
