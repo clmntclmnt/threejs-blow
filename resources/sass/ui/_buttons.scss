@@ -2,15 +2,16 @@
 
 .btn--bordered {
 	margin-top: 2em;
-	padding: 1em;
-	text-transform: uppercase;
+	padding: 0.75em 1em;
+	text-transform: lowercase;
 	color: $white-color;
 	display: inline-block;
-	border: 1px solid $white-color;
+	border: 2px solid $white-color;
 	text-decoration: none;
 	position: relative;
-	-webkit-transition: color 0.1s ease-in;
-	transition: color 0.1s ease-in;
+
+	-webkit-transition: color 0.1s ease-in, border-color 0.125s ease-in;
+	transition: color 0.1s ease-in, border-color 0.125s ease-in;
 
 	&:after {
 		position: absolute;
@@ -19,13 +20,13 @@
 		left: 0px;
 		right: 0px;
 		content: '';
-		background: $white-color;
+		background: $orange-color;
 		-webkit-transition: top 0.125s ease-in;
 		transition: top 0.125s ease-in;
 	}
 
 	&:hover {
-		color: $black-color;
+		border-color: $orange-color;
 
 		&:after {
 			top: 0px;

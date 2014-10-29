@@ -1,0 +1,13 @@
+.indicator {}
+
+.indicator--click {
+    position: absolute;
+    top: 0px;
+    right: 65px;
+    opacity: 0;
+
+    .fa {
+        font-size: 25px;
+        color: $white-color;
+    }
+}

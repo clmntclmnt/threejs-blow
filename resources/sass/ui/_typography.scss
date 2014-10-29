@@ -1,0 +1,35 @@
+// Font faces
+// @include font-face('proximanova', font-files("proxima-regular.ttf", "proxima-regular.otf", "proxima-regular.svg", "proxima-regular.eot"), "proxima-regular.svg", 300, normal);
+// @include font-face('proximanova', font-files("proxima-bold.ttf", "proxima-bold.otf", "proxima-bold.svg", "proxima-bold.eot"), "proxima-bold.otf", 500, normal);
+
+@font-face {
+  font-family: "proximanova";
+  src: font-url('proxima-regular.eot?#iefix') format('embedded-opentype'),
+      font-url('proxima-regular.ttf') format('truetype'),
+      font-url('proxima-regular.otf') format('opentype'),
+      font-url('proxima-regular.svg') format('svg'),
+      font-url('proxima-regular.eot') format('embedded-opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "proximanova";
+  src: font-url('proxima-bold.eot?#iefix') format('embedded-opentype'),
+      font-url('proxima-bold.ttf') format('truetype'),
+      font-url('proxima-bold.otf') format('opentype'),
+      font-url('proxima-bold.svg') format('svg'),
+      font-url('proxima-bold.eot') format('embedded-opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+// Font utils
+.pn {
+    font-family: "proximanova";
+    font-weight: 300;
+}
+
+.pn--b {
+    font-weight: 500;
+}

@@ -15,11 +15,22 @@
 		display: table-cell;
 		vertical-align: middle;
 		text-align: center;
+		width: 50%;
+		height: 0px;
 
-		.picture {
-			width: 500px;
+		.popin__logo-container {
+			width: 40%;
+			position: relative;
 			display: block;
+			max-width: 500px;
 			margin: 0 auto;
+			padding-left: 3.22%;
+			// Ok this sounds a little crazy
+			// But it's not.
+			// Its just to optically center the logo
+			// padding-left: 40px;
+			.picture {
+			}
 		}
 	}
 }

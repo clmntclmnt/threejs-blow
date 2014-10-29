@@ -2,38 +2,68 @@ var webgl,
     gui,
     globalAudio,
     soundAllowed,
-    isStarted;
+    isStarted,
+    ui,
+    animationDone;
 
 $(document).ready(init);
 
 function init(){
-    // FLAG
     isStarted = false;
-
     soundAllowed = false;
+    animationDone = false;
     globalAudio = {};
+    ui = {};
 
-    // getSoundFromMic();
-
-    gui = new dat.GUI();
-
-    // gui.close();
+    // gui = new dat.GUI();
     webgl = new Webgl(window.innerWidth, window.innerHeight);
 
     $(window).on('resize', resizeHandler);
 
+    bindUI();
+    bindEvents();
     animateIntroScene();
-
     animate();
 
     // main.init();
 }
 
-function animateIntroScene() {
-    var $logo = $('.js-intro');
+function bindUI() {
+    ui.$win = $(window);
+    ui.$body = $('body');
+    ui.$blockIntro = $('.js-intro');
+    ui.$btnStart = '.js-start';
+    ui.$indicatorHand = $('.js-click-please');
+}
 
-    TweenMax.from($logo, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
-    TweenMax.to($logo, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
+function bindEvents() {
+    ui.$body.on('click', ui.$btnStart, $.proxy(animateOutroScene));
+}
+
+function animateIntroScene() {
+    TweenMax.from(ui.$blockIntro, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockIntro, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
+}
+
+function animateOutroScene(e) {
+    e.preventDefault();
+
+    TweenMax.from(ui.$blockIntro, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockIntro, 1.5, {y: 100, opacity: 0, ease: Expo.easeInOut});
+
+    isStarted = true;
+}
+
+function animateIndicator(way) {
+    if(way == 'in') {
+        TweenMax.to(ui.$indicatorHand, 1, {y: 20, opacity: 1, ease: Expo.easeInOut, repeat: -1});
+    } else {
+        TweenMax.to(ui.$indicatorHand, 1, {opacity: 0, ease: Expo.easeInOut, onComplete: setAnimationDone});
+    }
+}
+
+function setAnimationDone() {
+    animationDone = true;
 }
 
 function getSoundFromMic() {

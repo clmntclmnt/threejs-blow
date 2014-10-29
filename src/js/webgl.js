@@ -28,7 +28,7 @@ var Webgl = (function(){
 
         // Lights
         this.scene.add( new THREE.AmbientLight( 0x000000) );
-        
+
         this.landLight = new THREE.SpotLight(0x0B1340);
         this.landLight.intensity = .5;
         this.landLight.position.set(0, 1000, 0);
@@ -45,16 +45,16 @@ var Webgl = (function(){
         this.landLight.castShadow = true;
         this.landLight.shadowCameraVisible = false;
         this.scene.add(this.landLight);
-        
+
         this.farLight = new THREE.SpotLight(0xffa500);
         this.farLight.intensity = .5;
         this.farLight.position.set(0, 1000, 5000);
         this.scene.add(this.farLight);
 
         // GUI
-        gui.add(this.camera.position, 'x');
-        gui.add(this.camera.position, 'y');
-        gui.add(this.camera.position, 'z');
+        // gui.add(this.camera.position, 'x');
+        // gui.add(this.camera.position, 'y');
+        // gui.add(this.camera.position, 'z');
 
 
         // Controls
@@ -63,12 +63,12 @@ var Webgl = (function(){
         // this.controls.addEventListener('change', this.render );
         // this.controls.target.set( 0, 0, 0 )
     };
-    
+
     Webgl.prototype.initPostProcessing = function() {
         this.effects = [];
 
         this.composer = new THREE.EffectComposer(this.renderer);
-        this.renderModel = new THREE.RenderPass(this.scene,this.camera);		     
+        this.renderModel = new THREE.RenderPass(this.scene,this.camera);
         this.renderModel.renderToScreen = false;
         this.composer.addPass(this.renderModel);
 
@@ -114,7 +114,7 @@ var Webgl = (function(){
             break;
         }
     };
-        
+
 
     Webgl.prototype.tossBall = function() {
         var xSpeed = Math.random() * 600 - 300;
@@ -129,12 +129,12 @@ var Webgl = (function(){
         this.scene = new Physijs.Scene({reportsize: 50, fixedTimeStep: 1 / 60});
         this.scene.setGravity(new THREE.Vector3( 0, -500, 0 ));
     };
-    
-    
+
+
     Webgl.prototype.moveBall = function(value) {
 //        console.log(value);
         this.destination += ((value*50) - this.destination) * 0.1;
-        
+
         ball.setLinearVelocity( new THREE.Vector3(0,0,this.destination) );
     };
 
@@ -297,6 +297,7 @@ var Webgl = (function(){
 
         if(ball.position.y == 30 && !soundAllowed) {
             soundAllowed = true;
+            animateIndicator('in');
             getSoundFromMic();
             this.camera.position.z = ball.position.z - 400;
             // return;
@@ -305,13 +306,17 @@ var Webgl = (function(){
         if(soundAllowed) {
             this.blowMovesScene(audioObject);
             this.followBall(ball.position.z, audioObject);
+
+            if(audioObject.maxValue !== undefined && animationDone == false){
+                animateIndicator('out');
+            }
         }
 
         if(ball.position.z > 30) {
             this.renderer.clear();
             this.composer.render();
         }
- 
+
         // if(ball.position.z)
         if(ball.position.z > 30 && ball.position.z < 250) {
 
