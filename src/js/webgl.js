@@ -108,7 +108,8 @@ var Webgl = (function(){
             break;
             case 'bloom':
                 console.log('youpi');
-                this.effects[0].enabled = false;
+                this.effects[0].enabled = false
+                ;
                 this.effects[2].renderToScreen = true;
             break;
         }

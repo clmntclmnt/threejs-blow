@@ -63,6 +63,41 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   display: block;
 }
 
+/* line 3, ../resources/sass/ui/_buttons.scss */
+.btn--bordered {
+  margin-top: 2em;
+  padding: 1em;
+  text-transform: uppercase;
+  color: #fff;
+  display: inline-block;
+  border: 1px solid #fff;
+  text-decoration: none;
+  position: relative;
+  -webkit-transition: color 0.1s ease-in;
+  transition: color 0.1s ease-in;
+}
+/* line 15, ../resources/sass/ui/_buttons.scss */
+.btn--bordered:after {
+  position: absolute;
+  bottom: 0px;
+  top: 100%;
+  left: 0px;
+  right: 0px;
+  content: '';
+  background: #fff;
+  -webkit-transition: top 0.125s ease-in;
+  transition: top 0.125s ease-in;
+}
+/* line 27, ../resources/sass/ui/_buttons.scss */
+.btn--bordered:hover {
+  color: #000;
+}
+/* line 30, ../resources/sass/ui/_buttons.scss */
+.btn--bordered:hover:after {
+  top: 0px;
+  z-index: -1;
+}
+
 /* line 1, ../resources/sass/ui/_others.scss */
 .picture {
   max-width: 100%;
@@ -77,7 +112,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
   bottom: 0px;
   height: 100%;
   width: 100%;
-  display: none;
+  display: table;
 }
 /* line 14, ../resources/sass/ui/_popin.scss */
 .popin--home .popin__inner {
@@ -88,4 +123,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, main, menu,
 /* line 19, ../resources/sass/ui/_popin.scss */
 .popin--home .popin__inner .picture {
   width: 500px;
+  display: block;
+  margin: 0 auto;
 }

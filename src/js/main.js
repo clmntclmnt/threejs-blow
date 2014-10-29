@@ -8,7 +8,7 @@ $(document).ready(init);
 
 function init(){
     // FLAG
-    isStarted = true;
+    isStarted = false;
 
     soundAllowed = false;
     globalAudio = {};
@@ -30,7 +30,7 @@ function init(){
 }
 
 function animateIntroScene() {
-    var $logo = $('.js-intro').find('.picture');
+    var $logo = $('.js-intro');
 
     TweenMax.from($logo, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
     TweenMax.to($logo, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});

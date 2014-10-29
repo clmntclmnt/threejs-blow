@@ -1,0 +1,35 @@
+.btn {}
+
+.btn--bordered {
+	margin-top: 2em;
+	padding: 1em;
+	text-transform: uppercase;
+	color: $white-color;
+	display: inline-block;
+	border: 1px solid $white-color;
+	text-decoration: none;
+	position: relative;
+	-webkit-transition: color 0.1s ease-in;
+	transition: color 0.1s ease-in;
+
+	&:after {
+		position: absolute;
+		bottom: 0px;
+		top: 100%;
+		left: 0px;
+		right: 0px;
+		content: '';
+		background: $white-color;
+		-webkit-transition: top 0.125s ease-in;
+		transition: top 0.125s ease-in;
+	}
+
+	&:hover {
+		color: $black-color;
+
+		&:after {
+			top: 0px;
+			z-index: -1;
+		}
+	}
+}
