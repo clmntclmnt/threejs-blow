@@ -17,8 +17,7 @@ function init(){
     animationDone = false;
     globalAudio = {};
     ui = {};
-
-    // gui = new dat.GUI();
+    
     webgl = new Webgl(window.innerWidth, window.innerHeight);
 
     $(window).on('resize', resizeHandler);
@@ -27,8 +26,6 @@ function init(){
     bindEvents();
     animateIntroScene();
     animate();
-
-    // main.init();
 }
 
 function bindUI() {

@@ -1,9 +1,6 @@
 var Webgl = (function(){
 
     function Webgl(width, height){
-        this.t = 0;
-        this.valueToDesc = 0.8;
-        this.lightDirection = true;
         this.destination = 0;
         this.stopExecuted = false;
 
@@ -11,13 +8,26 @@ var Webgl = (function(){
         this.buildGround();
         this.buildPhysicsMaterial();
         this.buildBall();
+        this.initLights();
+        this.initSounds();
+        this.initCamera(width, height);
+        this.initRenderer(width, height);
 
-        this.setupSounds();
+        $('.three').append(this.renderer.domElement);
 
+        // Controls
+        // Even if I don't use it, lights doesn't work if I dont keep this (wtf)
+        this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
+        this.initPostProcessing();
+    };
+
+    Webgl.prototype.initCamera = function (width, height) {
         this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 10000);
         this.camera.position.z = -400;
         this.camera.position.y = 200;
+    }
 
+    Webgl.prototype.initRenderer = function (width, height) {
         this.renderer = new THREE.WebGLRenderer({antialias: true});
         this.renderer.setSize(width, height);
         this.renderer.setClearColor(0x000000);
@@ -25,10 +35,9 @@ var Webgl = (function(){
         this.renderer.shadowMapSoft = true;
         this.renderer.shadowMapType = THREE.PCFShadowMap;
         this.renderer.shadowMapAutoUpdate = true;
+    }
 
-        $('.three').append(this.renderer.domElement);
-
-        // Lights
+    Webgl.prototype.initLights = function () {
         this.scene.add( new THREE.AmbientLight( 0x000000) );
 
         this.landLight = new THREE.SpotLight(0x0B1340);
@@ -82,54 +91,6 @@ var Webgl = (function(){
         this.farLight5.castShadow = false;
         this.farLight5.shadowBias = -.0001;
         this.scene.add(this.farLight5);
-
-        // Controls
-        this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
-        this.initPostProcessing();
-    };
-
-    Webgl.prototype.Sound = function ( sources, radius, volume ) {
-        var audio = document.createElement( 'audio' );
-
-        for ( var i = 0; i < sources.length; i ++ ) {
-
-            var source = document.createElement( 'source' );
-            source.src = sources[ i ];
-
-            audio.appendChild( source );
-            audio.volume = volume;
-
-        }
-
-        this.position = new THREE.Vector3();
-
-        this.play = function () {
-
-            audio.play();
-
-        }
-
-        this.pause = function() {
-
-            audio.pause();
-
-        }
-
-        this.update = function ( camera ) {
-
-            var distance = this.position.distanceTo( camera.position );
-
-            if ( distance <= radius ) {
-
-                audio.volume = volume * ( 1 - distance / radius );
-
-            } else {
-
-                audio.volume = 0;
-
-            }
-
-        }
     };
 
     Webgl.prototype.initPostProcessing = function() {
@@ -156,10 +117,44 @@ var Webgl = (function(){
         }
     };
 
+    Webgl.prototype.initSounds = function() {
+        this.sound1 = new this.Sound( ['assets/sounds/eva.mp3'], 200, 0.5 );
+    };
+
+    Webgl.prototype.Sound = function ( sources, radius, volume ) {
+        var audio = document.createElement( 'audio' );
+
+        for ( var i = 0; i < sources.length; i ++ ) {
+            var source = document.createElement( 'source' );
+            source.src = sources[ i ];
+            audio.appendChild( source );
+            audio.volume = volume;
+        }
+
+        this.position = new THREE.Vector3();
+
+        this.play = function () {
+            audio.play();
+        }
+
+        this.pause = function() {
+            audio.pause();
+        }
+
+        this.update = function ( camera ) {
+            var distance = this.position.distanceTo( camera.position );
+
+            if ( distance <= radius ) {
+                audio.volume = volume * ( 1 - distance / radius );
+            } else {
+                audio.volume = 0;
+            }
+        }
+    };
+
     Webgl.prototype.stopEffects = function () {
         for(var i = 0, j = this.effects.length; i<j; i++){
             this.effects[i].renderToScreen = false;
-            console.log('stopped', i);
         }
         this.stopExecuted = true;
     };
@@ -181,13 +176,9 @@ var Webgl = (function(){
         }
     };
 
-    Webgl.prototype.setupSounds = function() {
-        this.sound1 = new this.Sound( ['assets/sounds/eva.mp3'], 200, 0.5 );
-    };
-
     Webgl.prototype.buildPhysicsScene = function () {
         Physijs.scripts.worker = 'assets/lib/physijs/physijs_worker.js';
-        Physijs.scripts.ammo = '../ammo.js/builds/ammo.js'; // must be relative to physijs_worker.js
+        Physijs.scripts.ammo = '../ammo.js/builds/ammo.js';
 
         this.scene = new Physijs.Scene({reportsize: 50, fixedTimeStep: 1 / 60});
         this.scene.setGravity(new THREE.Vector3( 0, -500, 0 ));
