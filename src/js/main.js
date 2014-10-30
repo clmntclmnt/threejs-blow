@@ -4,7 +4,8 @@ var webgl,
     soundAllowed,
     isStarted,
     ui,
-    animationDone;
+    animationDone,
+    soundListening;
 
 $(document).ready(init);
 
@@ -34,6 +35,7 @@ function bindUI() {
     ui.$blockIntro = $('.js-intro');
     ui.$btnStart = '.js-start';
     ui.$indicatorHand = $('.js-click-please');
+    ui.$blockMic = $('.js-microphone-please');
 }
 
 function bindEvents() {
@@ -49,16 +51,30 @@ function animateOutroScene(e) {
     e.preventDefault();
 
     TweenMax.from(ui.$blockIntro, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
-    TweenMax.to(ui.$blockIntro, 1.5, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockIntro, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut});
 
     isStarted = true;
 }
 
+function animateAllowMic() {
+    TweenMax.from(ui.$blockMic, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockMic, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
+}
+
+function animateOutAllowMic() {
+    console.log('qsdqsd');
+    TweenMax.from(ui.$blockMic, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockMic, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut});
+}
+
 function animateIndicator(way) {
     if(way == 'in') {
-        TweenMax.to(ui.$indicatorHand, 1, {y: 20, opacity: 1, ease: Expo.easeInOut, repeat: -1});
+        TweenMax.to(ui.$indicatorHand, 1, {opacity: 1, ease: Expo.easeInOut});
+
+        var tween = TweenMax.to(ui.$indicatorHand, 1, {y: 30, ease: Expo.easeInOut, repeat: -1});
+        tween.yoyo(true);
     } else {
-        TweenMax.to(ui.$indicatorHand, 1, {opacity: 0, ease: Expo.easeInOut, onComplete: setAnimationDone});
+        TweenMax.to(ui.$indicatorHand, 0.1, {opacity: 0, ease: Expo.easeInOut, onComplete: setAnimationDone});
     }
 }
 
@@ -119,7 +135,10 @@ function animate() {
     webgl.render(globalAudio);
 
     if(globalAudio.amplitudeArray === undefined) {
+        soundListening = false;
         return;
+    } else {
+        soundListening = true;
     }
 
     samplesHandler(globalAudio.amplitudeArray);

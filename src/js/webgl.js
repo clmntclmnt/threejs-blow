@@ -12,6 +12,8 @@ var Webgl = (function(){
         this.buildPhysicsMaterial();
         this.buildBall();
 
+        this.setupSounds();
+
         this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 10000);
         this.camera.position.z = -400;
         this.camera.position.y = 200;
@@ -49,7 +51,16 @@ var Webgl = (function(){
         this.farLight = new THREE.SpotLight(0xffa500);
         this.farLight.intensity = .5;
         this.farLight.position.set(0, 1000, 5000);
+        this.farLight.castShadow = true;
+        this.farLight.shadowBias = -.0001;
         this.scene.add(this.farLight);
+
+        this.farLight2 = new THREE.SpotLight(0xff0000);
+        this.farLight2.intensity = .5;
+        this.farLight2.position.set(0, 500, 10000);
+        this.farLight2.castShadow = true;
+        this.farLight2.shadowBias = -.0001;
+        this.scene.add(this.farLight2);
 
         // GUI
         // gui.add(this.camera.position, 'x');
@@ -60,8 +71,50 @@ var Webgl = (function(){
         // Controls
         this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
         this.initPostProcessing();
-        // this.controls.addEventListener('change', this.render );
-        // this.controls.target.set( 0, 0, 0 )
+    };
+
+    Webgl.prototype.Sound = function ( sources, radius, volume ) {
+        var audio = document.createElement( 'audio' );
+
+        for ( var i = 0; i < sources.length; i ++ ) {
+
+            var source = document.createElement( 'source' );
+            source.src = sources[ i ];
+
+            audio.appendChild( source );
+            audio.volume = volume;
+
+        }
+
+        this.position = new THREE.Vector3();
+
+        this.play = function () {
+
+            audio.play();
+
+        }
+
+        this.pause = function() {
+
+            audio.pause();
+
+        }
+
+        this.update = function ( camera ) {
+
+            var distance = this.position.distanceTo( camera.position );
+
+            if ( distance <= radius ) {
+
+                audio.volume = volume * ( 1 - distance / radius );
+
+            } else {
+
+                audio.volume = 0;
+
+            }
+
+        }
     };
 
     Webgl.prototype.initPostProcessing = function() {
@@ -104,17 +157,21 @@ var Webgl = (function(){
     Webgl.prototype.startEffect = function (name) {
         switch(name) {
             case 'glitch':
+                console.log('glitch');
                 this.effects[0].renderToScreen = true;
             break;
             case 'bloom':
                 console.log('youpi');
-                this.effects[0].enabled = false
-                ;
+                this.effects[0].enabled = false;
                 this.effects[2].renderToScreen = true;
             break;
         }
     };
 
+    Webgl.prototype.setupSounds = function() {
+        this.sound1 = new this.Sound( ['assets/sounds/eva.mp3'], 200, 0.3 );
+        // this.sound1.play();
+    };
 
     Webgl.prototype.tossBall = function() {
         var xSpeed = Math.random() * 600 - 300;
@@ -133,22 +190,13 @@ var Webgl = (function(){
 
     Webgl.prototype.moveBall = function(value) {
 //        console.log(value);
-        this.destination += ((value*50) - this.destination) * 0.1;
+        this.destination += ((value*70) - this.destination) * 0.1;
 
         ball.setLinearVelocity( new THREE.Vector3(0,0,this.destination) );
     };
 
     Webgl.prototype.followBall = function (value, audioObject) {
-        // console.log(value, this.camera.position.z);
-        this.camera.position.z += ((value - 400) - this.camera.position.z) * 0.1;
-//        this.farLight.intensity = (((audioObject.maxValue - 0.5)*2) > 0.2) ? ((audioObject.maxValue - 0.5)*2) : 0.2;
-//        console.log(this.farLight.intensity);
-//        console.log(this.farLight.intensity);//        this.light.position.set(0, 1000, value);
-
-        // Try tween camera
-        // console.log(TweenMax);
-        // TweenMax.to(this.camera.position, {z: (value-400)}, 200);
-        // console.log(light);
+        this.camera.position.z += ((value - 400) - this.camera.position.z) * 0.2;
     }
 
     Webgl.prototype.buildGround = function () {
@@ -287,29 +335,26 @@ var Webgl = (function(){
         if(!isStarted){
             return;
         }
-
+        this.sound1.play();
         this.scene.simulate();
 
-
-
-        // this.controls.update();
-        // console.log(this.camera.position.z);
-
         if(ball.position.y == 30 && !soundAllowed) {
+            console.log(soundListening);
             soundAllowed = true;
             animateIndicator('in');
             getSoundFromMic();
+            animateAllowMic();
             this.camera.position.z = ball.position.z - 400;
-            // return;
+        }
+
+        if(ball.position.z == 0 && soundListening) {
+            animateOutAllowMic();
+            animateIndicator('out');
         }
 
         if(soundAllowed) {
             this.blowMovesScene(audioObject);
             this.followBall(ball.position.z, audioObject);
-
-            if(audioObject.maxValue !== undefined && animationDone == false){
-                animateIndicator('out');
-            }
         }
 
         if(ball.position.z > 30) {
@@ -318,7 +363,7 @@ var Webgl = (function(){
         }
 
         // if(ball.position.z)
-        if(ball.position.z > 30 && ball.position.z < 250) {
+        if(ball.position.z > 30 && ball.position.z < 1000) {
 
             if(this.stopExecuted) {
                 return;
@@ -328,17 +373,30 @@ var Webgl = (function(){
             this.startEffect('glitch');
         }
 
-        if(ball.position.z > 250 && ball.position.z < 300) {
+        if(ball.position.z > 1000 && ball.position.z < 1050) {
             this.stopExecuted = false;
         }
 
-        if(ball.position.z > 300) {
+        if(ball.position.z > 1050) {
             if(this.stopExecuted) {
                 return;
             }
 
             this.stopEffects();
             this.startEffect('bloom');
+        }
+
+        if(ball.position.z > 2000 && ball.position.z < 2100) {
+            this.stopExecuted = false;
+        }
+
+        if(ball.position.z > 2100) {
+            if(this.stopExecuted) {
+                return;
+            }
+
+            this.stopEffects();
+            this.startEffect('glitch');
         }
     };
 

@@ -1,6 +1,4 @@
-.popin {}
-
-.popin--home {
+.popin {
 	position: fixed;
 	top: 0px;
 	left: 0px;
@@ -9,14 +7,19 @@
 	height: 100%;
 	width: 100%;
 	display: table;
-	// display: none;
 
 	.popin__inner {
 		display: table-cell;
 		vertical-align: middle;
 		text-align: center;
+	}
+}
+
+.popin--home {
+	z-index: 2;
+
+	.popin__inner {
 		width: 50%;
-		height: 0px;
 
 		.popin__logo-container {
 			width: 40%;
@@ -24,13 +27,23 @@
 			display: block;
 			max-width: 500px;
 			margin: 0 auto;
-			padding-left: 3.22%;
+			// padding-left: 3.22%;
 			// Ok this sounds a little crazy
 			// But it's not.
 			// Its just to optically center the logo
-			// padding-left: 40px;
-			.picture {
-			}
+			padding-left: 40px;
 		}
 	}
+}
+
+.popin--mic {
+	z-index: 1;
+
+	.popin__inner {
+		opacity: 0;
+	}
+
+	// &.is-hidden {
+	// 	z-index: -1;
+	// }
 }

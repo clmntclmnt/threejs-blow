@@ -1,8 +1,12 @@
 body {
     -webkit-font-smoothing: antialiased;
-
+    text-rendering: optimizeLegibility;
 }
 
 .picture {
 	max-width: 100%;
+}
+
+.white {
+	color: $white-color;
 }
