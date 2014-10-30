@@ -13,7 +13,6 @@ var Webgl = (function(){
         this.buildBall();
 
         this.setupSounds();
-        
 
         this.camera = new THREE.PerspectiveCamera(50, width / height, 1, 10000);
         this.camera.position.z = -400;
@@ -46,7 +45,7 @@ var Webgl = (function(){
         this.landLight.shadowMapWidth = this.landLight.shadowMapHeight = 1024;
         this.landLight.shadowDarkness = .25;
         this.landLight.castShadow = true;
-        this.landLight.shadowCameraVisible = true;
+        this.landLight.shadowCameraVisible = false;
         this.scene.add(this.landLight);
 
         this.farLight = new THREE.SpotLight(0xffa500);
@@ -70,11 +69,19 @@ var Webgl = (function(){
         this.farLight3.shadowBias = -.0001;
         this.scene.add(this.farLight3);
 
-        // GUI
-        // gui.add(this.camera.position, 'x');
-        // gui.add(this.camera.position, 'y');
-        // gui.add(this.camera.position, 'z');
+        this.farLight4 = new THREE.SpotLight(0xfff0f0);
+        this.farLight4.intensity = .5;
+        this.farLight4.position.set(0, 300, 5000);
+        this.farLight4.castShadow = false;
+        this.farLight4.shadowBias = -.0001;
+        this.scene.add(this.farLight4);
 
+        this.farLight5 = new THREE.SpotLight(0x00ff00);
+        this.farLight5.intensity = .5;
+        this.farLight5.position.set(0, 300, 6000);
+        this.farLight5.castShadow = false;
+        this.farLight5.shadowBias = -.0001;
+        this.scene.add(this.farLight5);
 
         // Controls
         this.controls = new THREE.TrackballControls( this.camera, this.renderer.domElement );
@@ -143,15 +150,10 @@ var Webgl = (function(){
 
         this.copyPass = new THREE.ShaderPass(THREE.CopyShader);
         this.effects.push(this.copyPass)
-        // this.copyPass.renderToScreen = true;
-
 
         for(var i=0,j=this.effects.length; i<j; i++){
             this.composer.addPass(this.effects[i]);
         }
-        // this.composer.addPass(this.effects[0]);
-
-        // this.stopEffects();
     };
 
     Webgl.prototype.stopEffects = function () {
@@ -165,12 +167,10 @@ var Webgl = (function(){
     Webgl.prototype.startEffect = function (name) {
         switch(name) {
             case 'glitch':
-                console.log('glitch');
                 this.effects[0].enabled = true;
                 this.effects[0].renderToScreen = true;
             break;
             case 'bloom':
-                console.log('youpi');
                 this.effects[0].enabled = false;
                 this.effects[2].renderToScreen = true;
             break;
@@ -182,14 +182,7 @@ var Webgl = (function(){
     };
 
     Webgl.prototype.setupSounds = function() {
-        this.sound1 = new this.Sound( ['assets/sounds/eva.mp3'], 200, 0 );
-        // this.sound1.play();
-    };
-
-    Webgl.prototype.tossBall = function() {
-        var xSpeed = Math.random() * 600 - 300;
-        var zSpeed = Math.random() * 600 - 300;
-        ball.setLinearVelocity( new THREE.Vector3(xSpeed,300,zSpeed) );
+        this.sound1 = new this.Sound( ['assets/sounds/eva.mp3'], 200, 0.5 );
     };
 
     Webgl.prototype.buildPhysicsScene = function () {
@@ -202,10 +195,8 @@ var Webgl = (function(){
 
 
     Webgl.prototype.moveBall = function(value) {
-//        console.log(value);
-        this.destination += ((value*70) - this.destination) * 0.1;
-
-        ball.setLinearVelocity( new THREE.Vector3(0,0,this.destination) );
+            this.destination += ((value*70) - this.destination) * 0.1;
+            ball.setLinearVelocity( new THREE.Vector3(0,0,this.destination) );
     };
 
     Webgl.prototype.followBall = function (value, audioObject) {
@@ -249,7 +240,6 @@ var Webgl = (function(){
         return physicsMesh;
     };
 
-    // create a material to share between segments of the physics walls -------------------------------
     Webgl.prototype.buildPhysicsMaterial = function() {
         physicsMaterial = Physijs.createMaterial(
             new THREE.MeshLambertMaterial({
@@ -265,7 +255,6 @@ var Webgl = (function(){
         );
     };
 
-    // create a physics wall of a certain size, at a certain location ---------------------------------
     Webgl.prototype.buildPhysicsWall = function(width, height, depth, x, y, z) {
         var physicsMesh,
             wallGeometry;
@@ -281,26 +270,20 @@ var Webgl = (function(){
         return physicsMesh;
     };
 
-
-    // build the ball and draw its texture with a 2d canvas -------------------------------------------
     Webgl.prototype.buildBall = function() {
-        // create a canvas to draw the ball's texture
         var ballCanvas = document.createElement('canvas');
         ballCanvas.width = 64;
         ballCanvas.height = 64;
         var ballContext = ballCanvas.getContext('2d');
 
-        // draw 2 colored halves of the 2d canvas
         ballContext.fillStyle = "#ffa500";
         ballContext.fillRect(0, 0, ballCanvas.width, ballCanvas.height/2);
         ballContext.fillStyle = "#005aff";
         ballContext.fillRect(0, ballCanvas.height/2, ballCanvas.width, ballCanvas.height/2);
 
-        // create the THREE texture object with our canvas
         var ballTexture = new THREE.Texture( ballCanvas );
         ballTexture.needsUpdate = true;
 
-        // create the physijs-enabled material with some decent friction & bounce properties
         var ballMaterial = Physijs.createMaterial(
         new THREE.MeshLambertMaterial({
             map: ballTexture,
@@ -316,7 +299,6 @@ var Webgl = (function(){
         ballMaterial.map.wrapS = ballMaterial.map.wrapT = THREE.RepeatWrapping;
         ballMaterial.map.repeat.set( 1, 1 );
 
-        // create the physics-enabled sphere mesh, and start it up in the air
         ball = new Physijs.SphereMesh(
             new THREE.SphereGeometry( 30, 32, 32 ),
             ballMaterial,
@@ -326,7 +308,6 @@ var Webgl = (function(){
         ball.position.y = 500;
         ball.receiveShadow = true;
         ball.castShadow = true;
-        // ball.physics().addEventListener( 'collision', this.handleCollision );
         this.scene.add( ball );
     };
 
@@ -344,9 +325,6 @@ var Webgl = (function(){
 
     Webgl.prototype.render = function(audioObject) {
         this.renderer.render(this.scene, this.camera);
-
-        console.log('Ball position: ', ball.position.z);
-
         if(!isStarted){
             return;
         }
@@ -355,7 +333,6 @@ var Webgl = (function(){
         this.scene.simulate();
 
         if(ball.position.y == 30 && !soundAllowed) {
-            console.log(soundListening);
             soundAllowed = true;
             animateIndicator('in');
             getSoundFromMic();
@@ -368,9 +345,18 @@ var Webgl = (function(){
             animateIndicator('out');
         }
 
-        if(soundAllowed) {
+        if(soundAllowed && !isAllStopped) {
             this.blowMovesScene(audioObject);
             this.followBall(ball.position.z, audioObject);
+        }
+
+        if(ball.position.z > 4000 && !isAllStopped) {
+            isAllStopped = true;
+            animateEnd();
+        }
+
+        if(ball.position.z > 4000 && isAllStopped) {
+            this.moveBall(0);
         }
 
         if(ball.position.z > 30) {
@@ -378,9 +364,7 @@ var Webgl = (function(){
             this.composer.render();
         }
 
-        // if(ball.position.z)
         if(ball.position.z > 30 && ball.position.z < 1500) {
-
             if(this.stopExecuted) {
                 return;
             }
@@ -406,18 +390,13 @@ var Webgl = (function(){
             this.stopExecuted = false;
         }
 
-        if(ball.position.z > 3100) {
+        if(ball.position.z > 3100 && ball.position.z < 4000) {
             if(this.stopExecuted) {
                 return;
             }
 
             this.stopEffects();
             this.startEffect('glitchbloom');
-        }
-
-        if(ball.position.z > 1000) {
-            this.stopEffects();
-
         }
     };
 

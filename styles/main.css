@@ -2719,39 +2719,56 @@
   content: "";
 }
 
-/* line 3, ../resources/sass/ui/_buttons.scss */
-.btn--bordered {
+/* line 1, ../resources/sass/ui/_buttons.scss */
+.btn {
+  min-width: 100px;
+  text-decoration: none;
+  position: relative;
+  display: inline-block;
   padding: 0.75em 1em;
   text-transform: lowercase;
   color: #fff;
-  display: inline-block;
   border: 2px solid #fff;
-  text-decoration: none;
-  position: relative;
-  min-width: 100px;
   -webkit-transition: color 0.1s ease-in, border-color 0.125s ease-in;
   transition: color 0.1s ease-in, border-color 0.125s ease-in;
 }
-/* line 17, ../resources/sass/ui/_buttons.scss */
-.btn--bordered:after {
+/* line 13, ../resources/sass/ui/_buttons.scss */
+.btn:after {
   position: absolute;
   bottom: 0px;
   top: 100%;
   left: 0px;
   right: 0px;
   content: '';
-  background: #ffa500;
   -webkit-transition: top 0.125s ease-in;
   transition: top 0.125s ease-in;
 }
-/* line 29, ../resources/sass/ui/_buttons.scss */
+/* line 25, ../resources/sass/ui/_buttons.scss */
+.btn:hover:after {
+  top: 0px;
+  z-index: -1;
+}
+
+/* line 33, ../resources/sass/ui/_buttons.scss */
+.btn--bordered:after {
+  background: #ffa500;
+}
+/* line 37, ../resources/sass/ui/_buttons.scss */
 .btn--bordered:hover {
   border-color: #ffa500;
 }
-/* line 32, ../resources/sass/ui/_buttons.scss */
-.btn--bordered:hover:after {
-  top: 0px;
-  z-index: -1;
+
+/* line 44, ../resources/sass/ui/_buttons.scss */
+.btn--twitter .fa {
+  margin-right: 0.75em;
+}
+/* line 48, ../resources/sass/ui/_buttons.scss */
+.btn--twitter:hover {
+  border-color: #55acee;
+}
+/* line 52, ../resources/sass/ui/_buttons.scss */
+.btn--twitter:after {
+  background: #55acee;
 }
 
 /* line 1, ../resources/sass/ui/_others.scss */
@@ -2790,7 +2807,7 @@ body {
 
 /* line 18, ../resources/sass/ui/_popin.scss */
 .popin--home {
-  z-index: 2;
+  z-index: 3;
 }
 /* line 21, ../resources/sass/ui/_popin.scss */
 .popin--home .popin__inner {
@@ -2812,6 +2829,15 @@ body {
 }
 /* line 42, ../resources/sass/ui/_popin.scss */
 .popin--mic .popin__inner {
+  opacity: 0;
+}
+
+/* line 47, ../resources/sass/ui/_popin.scss */
+.popin--end {
+  z-index: 2;
+}
+/* line 50, ../resources/sass/ui/_popin.scss */
+.popin--end .popin__inner {
   opacity: 0;
 }
 

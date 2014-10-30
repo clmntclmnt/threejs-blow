@@ -1,16 +1,12 @@
-.btn {}
-
-.btn--bordered {
-	// margin-top: 2em;
+.btn {
+	min-width: 100px;
+	text-decoration: none;
+	position: relative;
+	display: inline-block;
 	padding: 0.75em 1em;
 	text-transform: lowercase;
 	color: $white-color;
-	display: inline-block;
 	border: 2px solid $white-color;
-	text-decoration: none;
-	position: relative;
-	min-width: 100px;
-
 	-webkit-transition: color 0.1s ease-in, border-color 0.125s ease-in;
 	transition: color 0.1s ease-in, border-color 0.125s ease-in;
 
@@ -21,17 +17,39 @@
 		left: 0px;
 		right: 0px;
 		content: '';
-		background: $orange-color;
 		-webkit-transition: top 0.125s ease-in;
 		transition: top 0.125s ease-in;
 	}
 
 	&:hover {
-		border-color: $orange-color;
-
 		&:after {
 			top: 0px;
 			z-index: -1;
 		}
+	}
+}
+
+.btn--bordered {
+	&:after {
+		background: $orange-color;
+	}
+
+	&:hover {
+		border-color: $orange-color;
+	}
+}
+
+.btn--twitter {
+	
+	.fa {
+		margin-right: 0.75em;
+	}
+
+	&:hover {
+		border-color: #55acee;
+	}
+
+	&:after {
+		background: #55acee;
 	}
 }

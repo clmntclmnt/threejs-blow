@@ -16,7 +16,7 @@
 }
 
 .popin--home {
-	z-index: 2;
+	z-index: 3;
 
 	.popin__inner {
 		width: 50%;
@@ -42,8 +42,12 @@
 	.popin__inner {
 		opacity: 0;
 	}
+}
 
-	// &.is-hidden {
-	// 	z-index: -1;
-	// }
+.popin--end {
+	z-index: 2;
+
+	.popin__inner {
+		opacity: 0;
+	}
 }

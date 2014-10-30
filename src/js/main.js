@@ -5,12 +5,14 @@ var webgl,
     isStarted,
     ui,
     animationDone,
-    soundListening;
+    soundListening,
+    isAllStopped;
 
 $(document).ready(init);
 
 function init(){
     isStarted = false;
+    isAllStopped = false;
     soundAllowed = false;
     animationDone = false;
     globalAudio = {};
@@ -36,6 +38,7 @@ function bindUI() {
     ui.$btnStart = '.js-start';
     ui.$indicatorHand = $('.js-click-please');
     ui.$blockMic = $('.js-microphone-please');
+    ui.$blockEnd = $('.js-end');
 }
 
 function bindEvents() {
@@ -51,7 +54,7 @@ function animateOutroScene(e) {
     e.preventDefault();
 
     TweenMax.from(ui.$blockIntro, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
-    TweenMax.to(ui.$blockIntro, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockIntro, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut, onComplete: function(){ $(this._targets[0]).css('display', 'none'); } });
 
     isStarted = true;
 }
@@ -62,9 +65,13 @@ function animateAllowMic() {
 }
 
 function animateOutAllowMic() {
-    console.log('qsdqsd');
     TweenMax.from(ui.$blockMic, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
     TweenMax.to(ui.$blockMic, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut});
+}
+
+function animateEnd() {
+    TweenMax.from(ui.$blockEnd, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockEnd, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
 }
 
 function animateIndicator(way) {
