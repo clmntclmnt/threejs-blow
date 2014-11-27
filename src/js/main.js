@@ -6,7 +6,9 @@ var webgl,
     ui,
     animationDone,
     soundListening,
-    isAllStopped;
+    isAllStopped,
+    animationDone,
+    browsers;
 
 $(document).ready(init);
 
@@ -17,15 +19,41 @@ function init(){
     animationDone = false;
     globalAudio = {};
     ui = {};
-    
+    browsers = {};
+    console.log(browsers);
+
+    // gui = new dat.GUI();
     webgl = new Webgl(window.innerWidth, window.innerHeight);
 
     $(window).on('resize', resizeHandler);
 
+    detectBrowsers();
     bindUI();
-    bindEvents();
     animateIntroScene();
     animate();
+
+    if(browsers.isSafari || browsers.isIE) {
+        throwBrowserException();
+        return;
+    }
+
+    bindEvents();
+
+    // main.init();
+}
+
+function detectBrowsers() {
+    browsers.isOpera = !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+        // Opera 8.0+ (UA detection to detect Blink/v8-powered Opera)
+    browsers.isFirefox = typeof InstallTrigger !== 'undefined';   // Firefox 1.0+
+    browsers.isSafari = Object.prototype.toString.call(window.HTMLElement).indexOf('Constructor') > 0;
+        // At least Safari 3+: "[object HTMLElementConstructor]"
+    browsers.isChrome = !!window.chrome && !browsers.isOpera;              // Chrome 1+
+    browsers.isIE = /*@cc_on!@*/false || !!document.documentMode; // At least IE6
+}
+
+function throwBrowserException() {
+    ui.$body.on('click', ui.$btnStart, $.proxy(animateException));
 }
 
 function bindUI() {
@@ -36,6 +64,7 @@ function bindUI() {
     ui.$indicatorHand = $('.js-click-please');
     ui.$blockMic = $('.js-microphone-please');
     ui.$blockEnd = $('.js-end');
+    ui.$blockExc = $('.js-no-way');
 }
 
 function bindEvents() {
@@ -69,6 +98,16 @@ function animateOutAllowMic() {
 function animateEnd() {
     TweenMax.from(ui.$blockEnd, 2, {y: 100, opacity: 0, ease: Expo.easeInOut});
     TweenMax.to(ui.$blockEnd, 2, {y: 0, opacity: 1, ease: Expo.easeInOut});
+}
+
+function animateException(e) {
+    e.preventDefault();
+
+    TweenMax.from(ui.$blockIntro, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockIntro, 1.5, {y: 50, opacity: 0, ease: Expo.easeInOut, onComplete: function(){ $(this._targets[0]).css('display', 'none'); } });
+
+    TweenMax.from(ui.$blockExc, 1.5, {y: 100, opacity: 0, ease: Expo.easeInOut});
+    TweenMax.to(ui.$blockExc, 1.5, {y: 0, opacity: 1, ease: Expo.easeInOut});
 }
 
 function animateIndicator(way) {
